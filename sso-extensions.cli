@@ -1,0 +1,30 @@
+batch
+set DB_DRIVER_NAME=postgresql
+set DB_USERNAME=rhssouser
+set DB_PASSWORD="QitAJisW3SbXBhsP"
+set DB_DRIVER=org.postgresql.Driver
+set DB_XA_DRIVER=org.postgresql.xa.PGXADataSource
+set DB_JDBC_URL="jdbc:postgresql://postgresql:5432/sso"
+set DB_EAP_MODULE=org.postgresql
+
+/subsystem=datasources/data-source=KeycloakDS:remove()
+/subsystem=datasources/data-source=KeycloakDS:add( \
+  jndi-name=java:jboss/datasources/KeycloakDS, \
+  enabled=true, \
+  use-java-context=true, \
+  connection-url=$DB_JDBC_URL, \
+  driver-name=$DB_DRIVER_NAME, \
+  user-name=$DB_USERNAME, \
+  password=$DB_PASSWORD \
+)
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=min-pool-size,value=2)
+
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=max-pool-size,value=10)
+
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=valid-connection-checker-class-name,value=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker)
+
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=validate-on-match,value=true)
+
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=exception-sorter-class-name,value=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter)
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=new-connection-sql,value=select 1)
+run-batch
